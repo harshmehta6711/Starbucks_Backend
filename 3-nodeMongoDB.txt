@@ -3,3 +3,93 @@ Steps to create 3-node MongoDB cluster.
 Here one node serves as primary node where write operations are perfomed. Other node serves as secondary node where read operations are performed. The data are replicated in both the nodes. This makes the backend more scalable and reliable and handles the incoming requests.
 
 The third node serves as the arbitrator and converts the secondary node to primary node when the primary node is down and cannot take the incoming request anymore.
+
+Here we make 3-node mongodb cluster on 3 ubuntu 16.0 EC2 instances in AWS.
+
+run the following commands on all the instances: 
+
+sudo nano /etc/fstab
+
+Add noatime directly after defaults,.
+
+LABEL=cloudimg-rootfs   /        ext4   defaults,noatime        0 0
+
+
+##Setup MongoDB on each Server
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+
+
+Stop the mongod server for a while.
+
+sudo service mongod stop
+
+##Modify the hosts on each Server Modify the hosts file on each server. Obviously on mongo1 the 127.0.0.1 will point at localhost mongo1.example.com
+
+sudo nano /etc/hosts
+
+127.0.0.1           localhost mongo0.example.com
+52.51.12.62         mongo0.example.com
+52.18.54.237        mongo1.example.com
+52.40.234.42        mongo2.example.com
+
+##Modify the hostname on each Server To make it easier, it is best to modify the hostname to make the servers easier to reference. First set the current hostname.
+
+sudo hostname mongo0.example.com
+
+Then update the hostname file to set the server name permanently.
+
+sudo nano /etc/hostname
+
+Set the hostname in the file to:
+
+mongo0.example.com
+
+##Modify the Mongo Configuration You need to modify the mongo configuration /etc/mongod.conf to first remove or comment out the bind_ip. This will tell mongo to listen on all interfaces.
+
+# mongod.conf                                                               
+
+# for documentation of all options, see:                                    
+#   http://docs.mongodb.org/manual/reference/configuration-options/         
+  
+# Where and how to store data.                                              
+storage:                                                                    
+  dbPath: /var/lib/mongodb                                                  
+  journal:                                                                  
+    enabled: true                                                           
+#  engine:                                                                  
+#  mmapv1:                                                                  
+#  wiredTiger:                                                              
+ 
+# where to write logging data.                                              
+systemLog:                                                                  
+  destination: file                                                         
+  logAppend: true                                                           
+  path: /var/log/mongodb/mongod.log                                         
+ 
+# network interfaces                                                        
+net:                   
+  #bindIp: 127.0.0.1 - Important to comment this line
+  port: 27017                                                               
+
+#processManagement:                                                         
+   
+#security:                                                                  
+   
+#operationProfiling:                                                        
+  
+#replication:                                                               
+replication:                    # Here you set the replication configuration                                             
+   oplogSizeMB: 1                                                           
+   replSetName: rs0                                                         
+
+#sharding:                                                                  
+
+## Enterprise-Only Options:                                                 
+
+#auditLog:                                                                  
+  
+#snmp:
