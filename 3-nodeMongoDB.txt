@@ -3,6 +3,7 @@ Steps to create 3-node MongoDB cluster.
 Here one node serves as primary node where write operations are perfomed. Other node serves as secondary node where read operations are performed. The data are replicated in both the nodes. This makes the backend more scalable and reliable and handles the incoming requests.
 
 The third node serves as the arbitrator and converts the secondary node to primary node when the primary node is down and cannot take the incoming request anymore.
+<<<<<<< HEAD
 
 Here we make 3-node mongodb cluster on 3 ubuntu 16.0 EC2 instances in AWS.
 
@@ -93,3 +94,5 @@ replication:                    # Here you set the replication configuration
 #auditLog:                                                                  
   
 #snmp:
+=======
+>>>>>>> 07d6d7aa7de893189bf4cde4587953cd2f568f7e
