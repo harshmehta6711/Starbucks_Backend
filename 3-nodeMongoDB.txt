@@ -5,7 +5,7 @@ Here one node serves as primary node where write operations are perfomed. Other 
 The third node serves as the arbitrator and converts the secondary node to primary node when the primary node is down and cannot take the incoming request anymore.
 <<<<<<< HEAD
 
-Here we make 3-node mongodb cluster on 3 ubuntu 16.0 EC2 instances in AWS.
+Here we make 3-node mongodb cluster on 3 ubuntu 16.04.2 EC2 instances in AWS.
 
 run the following commands on all the instances: 
 
