@@ -96,3 +96,5 @@ replication:                    # Here you set the replication configuration
 #snmp:
 =======
 >>>>>>> 07d6d7aa7de893189bf4cde4587953cd2f568f7e
+
+Take care of all the configurations made
