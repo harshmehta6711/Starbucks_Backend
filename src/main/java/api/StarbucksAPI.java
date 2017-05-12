@@ -7,14 +7,18 @@ import org.json.JSONObject;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 import java.util.concurrent.ConcurrentHashMap ;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection ;
-
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -28,17 +32,15 @@ public class StarbucksAPI {
 
     public static void placeOrder(String order_id, Order order) {
         try { 
+        	System.out.println("INN");
         	DBCollection coll=MongoDBJDBC.main1();
         	//JSONObject jsonobj=new JSONObject(order);
         	Representation result = new JacksonRepresentation<Order>(order) ;
+        	System.out.println("1");
         	BasicDBObject doc1=(BasicDBObject)JSON.parse(result.getText());
-        	
+        	System.out.print("2"+doc1);
         	//Order order1=(Order)JSON.parse(order.toString());
-        	 BasicDBObject doc = new BasicDBObject("title", "MongoDB").
-        	            append("description", "database").
-        	            append("comment", 100).
-        	            append("url", "http://www.tutorialspoint.com/mongodb/").
-        	            append("by", "tutorials point");
+        	 
         	 
         	           
         					
@@ -48,7 +50,7 @@ public class StarbucksAPI {
         	 
         	         System.out.println("Document inserted successfully");
         	
-            StarbucksAPI.orderQueue.put( order_id ) ; 
+            //StarbucksAPI.orderQueue.put( order_id ) ; 
         } catch (Exception e) {}
         StarbucksAPI.orders.put( order_id, order ) ;
         System.out.println( "Order Placed: " + order_id ) ;
@@ -60,19 +62,60 @@ public class StarbucksAPI {
     }
 
     public static void updateOrder(String key, Order order) {
-        StarbucksAPI.orders.replace( key, order ) ;
+    	DBCollection coll=MongoDBJDBC.main1();
+    	Representation result = new JacksonRepresentation<Order>(order) ;
+    	
+    	BasicDBObject doc1;
+		try {
+			doc1 = (BasicDBObject)JSON.parse(result.getText());
+			coll.update(new BasicDBObject("id", key),doc1);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+        //StarbucksAPI.orders.replace( key, order ) ;
     }
 
     public static Order getOrder(String key) {
-        return StarbucksAPI.orders.get( key ) ;
-    }
+       // return StarbucksAPI.orders.get( key ) ;
+    	try{
+        	DBCollection coll=MongoDBJDBC.main1();
+        	System.out.println("KEY"+key);
+        	BasicDBObject fields = new BasicDBObject("_id",0);
+            DBCursor cursor = coll.find(new BasicDBObject("id", key),fields);
+            //int i = 1;
+            //System.out.println(cursor.length());
+            ObjectMapper mapper = new ObjectMapper();
+            Order o=new Order();
+            //String jsonInString = "{'name' : 'mkyong'}";
+            while (cursor.hasNext()) {
+            	o = mapper.readValue(cursor.next().toString(), Order.class);
+            	//System.out.println(cursor.next());
+            	//o=(Order)cursor.next();
+            	//System.out.println(o);
+            }
+            return o;
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	//return orders.values();
+        	return null;
+          }
 
     public static void removeOrder(String key) {
     	DBCollection coll=MongoDBJDBC.main1();
     	System.out.println(key);
-    	coll.remove(new BasicDBObject("_id", key));
-        StarbucksAPI.orders.remove( key ) ;
-        StarbucksAPI.orderQueue.remove( key ) ;
+    	BasicDBObject document = new BasicDBObject();
+    	document.put("id", key);
+    	        //override above value 2
+    	coll.remove(document);
+    	//coll.find(query)
+    	//coll.remove(new BasicDBObject("id", key));
+        //StarbucksAPI.orders.remove( key ) ;
+        //StarbucksAPI.orderQueue.remove( key ) ;
     }
 
     public static void setOrderStatus( Order order, String URI, OrderStatus status ) {
@@ -119,18 +162,23 @@ public class StarbucksAPI {
 		
         DBCursor cursor = coll.find(new BasicDBObject("location", "sf"));
         //int i = 1;
-			
-        while (cursor.hasNext()) { 
+        //System.out.println(cursor.length());
+        List myList = new ArrayList();
+        while (cursor.hasNext()) {
            //System.out.println("Inserted Document: "+i); 
-           System.out.println(cursor.next()); 
+        	myList.add(cursor.next());
+//           System.out.println("INN:"+cursor.next()); 
            //i++;
-        }}
+        }
+        return myList;
+    	}
     	catch(Exception e)
     	{
     		
     	}
-        return orders.values() ;
-    }
+    	//return orders.values();
+    	return null;
+      }
 
 }
 

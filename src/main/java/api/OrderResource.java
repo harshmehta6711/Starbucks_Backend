@@ -73,8 +73,9 @@ public class OrderResource extends ServerResource {
     public Representation post_action (Representation rep) throws IOException {
 
         JacksonRepresentation<Order> orderRep = new JacksonRepresentation<Order> ( rep, Order.class ) ;
-
+System.out.println("LINE 1");
         Order order = orderRep.getObject() ;
+        System.out.println("LINE 2");
         StarbucksAPI.setOrderStatus( order, getReference().toString(), StarbucksAPI.OrderStatus.PLACED ) ;
         StarbucksAPI.placeOrder( order.id, order ) ;
 
