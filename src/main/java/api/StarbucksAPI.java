@@ -160,7 +160,7 @@ public class StarbucksAPI {
     	DBCollection coll=MongoDBJDBC.main1();
     	System.out.println("Collection mycol selected successfully");
 		
-        DBCursor cursor = coll.find(new BasicDBObject("location", "sf"));
+        DBCursor cursor = coll.find(new BasicDBObject("location","Palo Alto"));
         //int i = 1;
         //System.out.println(cursor.length());
         List myList = new ArrayList();

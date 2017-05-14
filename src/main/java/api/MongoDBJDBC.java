@@ -20,14 +20,14 @@ public class MongoDBJDBC {
       try{   
 		
          // To connect to mongodb server
-         MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+         MongoClient mongoClient = new MongoClient( "52.53.250.119" , 27017 );
 			
          // Now connect to your databases
-         DB db = mongoClient.getDB( "test" );
+         DB db = mongoClient.getDB( "Restbucks" );
          System.out.println("Connect to database successfully");
 			
                   
-         DBCollection coll = db.getCollection("mytest");
+         DBCollection coll = db.getCollection("order");
          System.out.println("Collection mycol selected successfully");
 			return coll;
         /* BasicDBObject doc = new BasicDBObject("title", "MongoDB").
